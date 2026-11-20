@@ -132,6 +132,100 @@ st.markdown("""
 st.markdown('<div class="lab-title">🧬 Prime Lab: Interactive Studio</div>', unsafe_allow_html=True)
 st.markdown('<div class="lab-sub">Laboratorium Eksplorasi Teori Bilangan, Saringan Visual, Kriptografi RSA, & Arena Game</div>', unsafe_allow_html=True)
 
+import streamlit.components.v1 as components
+
+# 4b. Musik Latar Interaktif (Web Audio API - Synth Ambient)
+with st.expander("🎵 Musik Latar Lab (Klik untuk Putar / Jeda)", expanded=False):
+    components.html(
+        """
+        <div style="display:flex; align-items:center; gap:12px; font-family:sans-serif; color:#0f172a;">
+            <button id="btnAudio" onclick="toggleMusic()" style="
+                padding:8px 16px; border:none; border-radius:8px;
+                background:#4f46e5; color:#ffffff; font-weight:600; cursor:pointer;">
+                ▶️ Putar Musik
+            </button>
+            <label style="font-size:13px;">Volume:
+                <input id="volSlider" type="range" min="0" max="100" value="25" oninput="setVolume(this.value)">
+            </label>
+            <span id="statusAudio" style="font-size:12px; color:#475569;">Siap diputar</span>
+        </div>
+
+        <script>
+            let audioCtx = null;
+            let isPlaying = false;
+            let masterGain = null;
+            let timerId = null;
+            let step = 0;
+
+            // Tangga nada pentatonik lembut (Hz)
+            const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+
+            function initAudio() {
+                if (!audioCtx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    audioCtx = new AudioContext();
+                    masterGain = audioCtx.createGain();
+                    masterGain.gain.value = (document.getElementById("volSlider").value / 100) * 0.25;
+                    masterGain.connect(audioCtx.destination);
+                }
+                if (audioCtx.state === "suspended") {
+                    audioCtx.resume();
+                }
+            }
+
+            function playSoftNote(freq) {
+                if (!audioCtx || !isPlaying) return;
+                const osc = audioCtx.createOscillator();
+                const noteGain = audioCtx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+                const now = audioCtx.currentTime;
+                noteGain.gain.setValueAtTime(0.0001, now);
+                noteGain.gain.exponentialRampToValueAtTime(0.4, now + 0.08);
+                noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.4);
+
+                osc.connect(noteGain);
+                noteGain.connect(masterGain);
+                osc.start(now);
+                osc.stop(now + 1.45);
+            }
+
+            function toggleMusic() {
+                initAudio();
+                const btn = document.getElementById("btnAudio");
+                const status = document.getElementById("statusAudio");
+
+                if (!isPlaying) {
+                    isPlaying = true;
+                    btn.innerHTML = "⏸️ Jeda Musik";
+                    btn.style.background = "#dc2626";
+                    status.innerText = "Sedang memutar melodi ambient...";
+                    playSoftNote(notes[step % notes.length]);
+                    step++;
+                    timerId = setInterval(() => {
+                        playSoftNote(notes[step % notes.length]);
+                        step++;
+                    }, 900);
+                } else {
+                    isPlaying = false;
+                    btn.innerHTML = "▶️ Putar Musik";
+                    btn.style.background = "#4f46e5";
+                    status.innerText = "Dijeda";
+                    clearInterval(timerId);
+                }
+            }
+
+            function setVolume(val) {
+                if (masterGain && audioCtx) {
+                    masterGain.gain.setValueAtTime((val / 100) * 0.25, audioCtx.currentTime);
+                }
+            }
+        </script>
+        """,
+        height=65,
+    )
+
 # 4 Tab Super Interaktif
 t_cek, t_grid, t_game, t_rsa = st.tabs([
     "🔬 Lab Deteksi & Pola",
