@@ -14,7 +14,7 @@ st.set_page_config(
 # 2. Inisialisasi Session State
 if "leaderboard" not in st.session_state:
     st.session_state.leaderboard = [
-        {"Nama Pemain": "Bot Einstein", "Skor": 60, "Mode": "30 Detik"}
+        {"Nama Pemain": "Bot Einstein", "Skor": 70, "Mode": "10 Soal (45d)"}
     ]
 if "game_aktif" not in st.session_state:
     st.session_state.game_aktif = False
@@ -24,9 +24,13 @@ if "skor_time" not in st.session_state:
     st.session_state.skor_time = 0
 if "soal_time" not in st.session_state:
     st.session_state.soal_time = random.randint(2, 99)
+if "soal_ke" not in st.session_state:
+    st.session_state.soal_ke = 1
+if "total_soal" not in st.session_state:
+    st.session_state.total_soal = 10
 if "angka_lab" not in st.session_state:
     st.session_state.angka_lab = 31
-
+    
 # 3. Fungsi Logika Matematika & Teori Bilangan
 def cek_prima_detail(n):
     if n <= 1:
@@ -231,64 +235,98 @@ with t_grid:
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ==========================================================
-# TAB 3: GAME TIME-ATTACK 30 DETIK + LEADERBOARD KELAS
+# TAB 3: GAME 10 SOAL (45 DETIK) + LEADERBOARD KELAS
 # ==========================================================
 with t_game:
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.subheader("⏱️ Tantangan 30 Detik & Papan Skor Kelas")
-    
+    st.subheader("⏱️ Tantangan 10 Soal (Batas Waktu 45 Detik)")
+
     nama_pemain = st.text_input("Masukkan Nama Pemain / Kelompok:", value="Mahasiswa Untirta")
-    
+    durasi_batas = 45
+
     if not st.session_state.game_aktif:
-        if st.button("🔥 MULAI TANTANGAN 30 DETIK!", type="primary", use_container_width=True):
+        if st.button("🔥 MULAI TANTANGAN 10 SOAL!", type="primary", use_container_width=True):
             st.session_state.game_aktif = True
             st.session_state.waktu_mulai = time.time()
             st.session_state.skor_time = 0
+            st.session_state.soal_ke = 1
             st.session_state.soal_time = random.randint(2, 99)
             st.rerun()
     else:
-        sisa_waktu = max(0, int(30 - (time.time() - st.session_state.waktu_mulai)))
-        
-        if sisa_waktu > 0:
-            c_w, c_s = st.columns(2)
+        sisa_waktu = max(0, int(durasi_batas - (time.time() - st.session_state.waktu_mulai)))
+        soal_sekarang = st.session_state.soal_ke
+        total_soal = st.session_state.total_soal
+
+        if sisa_waktu > 0 and soal_sekarang <= total_soal:
+            c_q, c_w, c_s = st.columns(3)
+            c_q.metric("📝 Soal Ke", f"{soal_sekarang} / {total_soal}")
             c_w.metric("⏳ Sisa Waktu", f"{sisa_waktu} detik")
             c_s.metric("🏆 Skor Sementara", f"{st.session_state.skor_time} Poin")
-            
+
             st.markdown(f"### Apakah **{st.session_state.soal_time}** Bilangan Prima?")
             b1, b2 = st.columns(2)
             status_soal = cek_prima_detail(st.session_state.soal_time)[0]
-            
+
             if b1.button("✅ YA (PRIMA)", use_container_width=True):
                 if status_soal:
                     st.session_state.skor_time += 10
                 else:
                     st.session_state.skor_time = max(0, st.session_state.skor_time - 5)
-                st.session_state.soal_time = random.randint(2, 99)
+
+                if st.session_state.soal_ke < total_soal:
+                    st.session_state.soal_ke += 1
+                    st.session_state.soal_time = random.randint(2, 99)
+                else:
+                    st.session_state.game_aktif = False
+                    st.session_state.leaderboard.append({
+                        "Nama Pemain": nama_pemain,
+                        "Skor": st.session_state.skor_time,
+                        "Mode": f"{total_soal} Soal"
+                    })
+                    st.session_state.leaderboard = sorted(
+                        st.session_state.leaderboard, key=lambda x: x["Skor"], reverse=True
+                    )[:5]
                 st.rerun()
-                
+
             if b2.button("❌ BUKAN", use_container_width=True):
                 if not status_soal:
                     st.session_state.skor_time += 10
                 else:
                     st.session_state.skor_time = max(0, st.session_state.skor_time - 5)
-                st.session_state.soal_time = random.randint(2, 99)
+
+                if st.session_state.soal_ke < total_soal:
+                    st.session_state.soal_ke += 1
+                    st.session_state.soal_time = random.randint(2, 99)
+                else:
+                    st.session_state.game_aktif = False
+                    st.session_state.leaderboard.append({
+                        "Nama Pemain": nama_pemain,
+                        "Skor": st.session_state.skor_time,
+                        "Mode": f"{total_soal} Soal"
+                    })
+                    st.session_state.leaderboard = sorted(
+                        st.session_state.leaderboard, key=lambda x: x["Skor"], reverse=True
+                    )[:5]
                 st.rerun()
         else:
             st.session_state.game_aktif = False
             st.balloons()
-            st.success(f"⏰ **WAKTU HABIS!** Skor akhir **{nama_pemain}**: **{st.session_state.skor_time} Poin**")
+            alasan = "Semua 10 soal selesai!" if soal_sekarang > total_soal else "Waktu 45 detik habis!"
+            st.success(f"🏁 **{alasan}** Skor akhir **{nama_pemain}**: **{st.session_state.skor_time} Poin**")
             st.session_state.leaderboard.append({
                 "Nama Pemain": nama_pemain,
                 "Skor": st.session_state.skor_time,
-                "Mode": "30 Detik"
+                "Mode": f"{total_soal} Soal"
             })
-            st.session_state.leaderboard = sorted(st.session_state.leaderboard, key=lambda x: x["Skor"], reverse=True)[:5]
+            st.session_state.leaderboard = sorted(
+                st.session_state.leaderboard, key=lambda x: x["Skor"], reverse=True
+            )[:5]
 
     st.divider()
     st.write("🏅 **Top 5 Leaderboard Kelas:**")
     st.dataframe(pd.DataFrame(st.session_state.leaderboard), use_container_width=True, hide_index=True)
     st.markdown('</div>', unsafe_allow_html=True)
-
+    
 # ==========================================================
 # TAB 4: SIMULASI KRIPTOGRAFI KUNCI PUBLIK (RSA)
 # ==========================================================
