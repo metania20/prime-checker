@@ -132,6 +132,8 @@ st.markdown("""
 st.markdown('<div class="lab-title">🧬 Prime Lab: Interactive Studio</div>', unsafe_allow_html=True)
 st.markdown('<div class="lab-sub">Laboratorium Eksplorasi Teori Bilangan, Saringan Visual, Kriptografi RSA, & Arena Game</div>', unsafe_allow_html=True)
 
+import streamlit.components.v1 as components
+
 # 4b. Musik Latar Ceria Otomatis (Auto-Start Arcade / Upbeat Melody)
 components.html(
     """
