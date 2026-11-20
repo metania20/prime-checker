@@ -50,30 +50,34 @@ def cari_prima_berikutnya(n):
 st.markdown("""
     <style>
     .stApp {
-        background: radial-gradient(circle at top right, #1e1b4b, #090d16 60%, #020617 100%);
-        color: #f8fafc;
+        background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+        color: #0f172a;
+    }
+    p, label, span, div, h1, h2, h3, .stMarkdown {
+        color: #0f172a;
     }
     .lab-title {
         font-size: 2.5rem;
         font-weight: 900;
         text-align: center;
-        background: linear-gradient(90deg, #22d3ee, #818cf8, #f472b6);
+        background: linear-gradient(90deg, #0284c7, #4f46e5, #db2777);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 2px;
     }
     .lab-sub {
         text-align: center;
-        color: #94a3b8;
+        color: #475569;
         font-size: 0.95rem;
         margin-bottom: 22px;
     }
     .glass-card {
-        background: rgba(255, 255, 255, 0.04);
-        backdrop-filter: blur(14px);
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(12px);
         border-radius: 18px;
         padding: 22px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid #cbd5e1;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
         margin-bottom: 16px;
     }
     .grid-container {
@@ -84,17 +88,17 @@ st.markdown("""
     }
     .cell-prime {
         background: linear-gradient(135deg, #10b981, #059669);
-        color: white;
+        color: #ffffff !important;
         font-weight: bold;
         text-align: center;
         padding: 8px 0;
         border-radius: 8px;
-        box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
         font-size: 0.85rem;
     }
     .cell-comp {
-        background: rgba(255, 255, 255, 0.05);
-        color: #64748b;
+        background: #f1f5f9;
+        color: #64748b !important;
         text-align: center;
         padding: 8px 0;
         border-radius: 8px;
@@ -102,18 +106,20 @@ st.markdown("""
         text-decoration: line-through;
     }
     .cell-one {
-        background: rgba(245, 158, 11, 0.15);
-        color: #fbbf24;
+        background: #fef3c7;
+        color: #b45309 !important;
         text-align: center;
         padding: 8px 0;
         border-radius: 8px;
         font-size: 0.85rem;
+        font-weight: 600;
     }
     .badge-spesial {
         display: inline-block;
-        background: rgba(168, 85, 247, 0.2);
+        background: #f3e8ff;
         border: 1px solid #c084fc;
-        color: #e9d5ff;
+        color: #6b21a8 !important;
+        font-weight: 600;
         padding: 5px 12px;
         border-radius: 999px;
         font-size: 0.82rem;
