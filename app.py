@@ -134,7 +134,7 @@ st.markdown('<div class="lab-sub">Laboratorium Eksplorasi Teori Bilangan, Saring
 
 import streamlit.components.v1 as components
 
-# 4b. Musik Latar Fun & Bouncy (Arpeggio + Bass Ringan)
+# 4b. Musik Latar Game Asik (Groovy Chiptune SMP/SMA - Auto-Start)
 components.html(
     """
     <script>
@@ -142,50 +142,50 @@ components.html(
         let isStarted = false;
         let step = 0;
 
-        // Pola melodi ceria naik-turun (C major / G major / A minor / F major)
+        // Melodi catchy & groovy (nuansa C major7 / A minor7 / F major7 / G6)
         const leadNotes = [
-            523.25, 659.25, 783.99, 659.25,
-            880.00, 783.99, 659.25, 587.33,
-            587.33, 783.99, 987.77, 783.99,
-            880.00, 783.99, 659.25, 523.25
+            523.25, 0, 659.25, 783.99, 987.77, 783.99, 659.25, 587.33,
+            440.00, 0, 523.25, 659.25, 783.99, 659.25, 523.25, 493.88,
+            349.23, 0, 440.00, 523.25, 659.25, 523.25, 440.00, 392.00,
+            392.00, 493.88, 587.33, 783.99, 659.25, 587.33, 523.25, 0
         ];
 
-        // Bass ringan pengiring agar lebih "fun"
+        // Bass groovy berirama (syncopated / off-beat ringan)
         const bassNotes = [
-            130.81, 0, 196.00, 0,
-            220.00, 0, 164.81, 0,
-            196.00, 0, 246.94, 0,
-            174.61, 0, 196.00, 0
+            130.81, 0, 130.81, 196.00, 0, 164.81, 196.00, 0,
+            110.00, 0, 110.00, 164.81, 0, 130.81, 164.81, 0,
+            87.31,  0, 87.31,  130.81, 0, 110.00, 130.81, 0,
+            98.00,  0, 146.83, 196.00, 0, 146.83, 130.81, 0
         ];
 
-        function playTone(freq, duration, type, peakGain) {
+        function playSynth(freq, duration, type, peakGain) {
             if (!audioCtx || freq === 0) return;
             const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
+            const gain = audioCtx.createGain();
 
             osc.type = type;
             osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
             const now = audioCtx.currentTime;
-            gainNode.gain.setValueAtTime(0.0008, now);
-            gainNode.gain.exponentialRampToValueAtTime(peakGain, now + 0.02);
-            gainNode.gain.exponentialRampToValueAtTime(0.0008, now + duration);
+            gain.gain.setValueAtTime(0.0008, now);
+            gain.gain.exponentialRampToValueAtTime(peakGain, now + 0.018);
+            gain.gain.exponentialRampToValueAtTime(0.0008, now + duration);
 
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
 
             osc.start(now);
             osc.stop(now + duration + 0.02);
         }
 
-        function playBeat() {
+        function playGrooveStep() {
             const idx = step % leadNotes.length;
-            playTone(leadNotes[idx], 0.18, "triangle", 0.085);
-            playTone(bassNotes[idx], 0.22, "sine", 0.07);
+            playSynth(leadNotes[idx], 0.16, "triangle", 0.08);
+            playSynth(bassNotes[idx], 0.19, "sine", 0.075);
             step++;
         }
 
-        function startFunMusic() {
+        function startGameMusic() {
             if (isStarted) return;
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!audioCtx) {
@@ -196,17 +196,17 @@ components.html(
             }
             if (audioCtx.state === "running") {
                 isStarted = true;
-                playBeat();
-                setInterval(playBeat, 210); // Tempo upbeat & fun
+                playGrooveStep();
+                setInterval(playGrooveStep, 175); // Tempo pas: energik & tidak bikin pusing
             }
         }
 
-        window.addEventListener("load", startFunMusic);
-        startFunMusic();
+        window.addEventListener("load", startGameMusic);
+        startGameMusic();
 
         ["click", "touchstart", "keydown"].forEach(evt => {
-            window.parent.document.addEventListener(evt, startFunMusic, { once: true });
-            document.addEventListener(evt, startFunMusic, { once: true });
+            window.parent.document.addEventListener(evt, startGameMusic, { once: true });
+            document.addEventListener(evt, startGameMusic, { once: true });
         });
     </script>
     """,
