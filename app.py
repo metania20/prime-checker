@@ -134,7 +134,7 @@ st.markdown("""
 
 # Header
 st.markdown('<div class="lab-title">🧬 Prime Lab: Interactive Studio</div>', unsafe_allow_html=True)
-st.markdown('<div class="lab-sub">Laboratorium Eksplorasi Teori Bilangan, Saringan Visual, Kriptografi RSA, & Arena Game</div>', unsafe_allow_html=True)
+st.markdown('<div class="lab-sub">Laboratorium Eksplorasi Teori Bilangan, Saringan Visual & Arena Game</div>', unsafe_allow_html=True)
 
 import streamlit.components.v1 as components
 
@@ -143,7 +143,6 @@ t_cek, t_grid, t_game, t_rsa = st.tabs([
     "🔬 Lab Deteksi & Pola",
     "🟩 Papan Saringan Visual",
     "⏱️ Time-Attack & Leaderboard",
-    "🔐 Simulasi Kriptografi RSA"
 ])
 
 # ==========================================================
@@ -325,25 +324,4 @@ with t_game:
     st.divider()
     st.write("🏅 **Top 5 Leaderboard Kelas:**")
     st.dataframe(pd.DataFrame(st.session_state.leaderboard), use_container_width=True, hide_index=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-# ==========================================================
-# TAB 4: SIMULASI KRIPTOGRAFI KUNCI PUBLIK (RSA)
-# ==========================================================
-with t_rsa:
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.subheader("🔐 Penerapan Nyata: Kunci Publik Kriptografi (RSA)")
-    st.write("Tahukah kamu? Keamanan perbankan & pesan WhatsApp bergantung pada perkalian **dua bilangan prima** ($N = p \\times q$) yang sangat sulit difaktorkan kembali!")
-    
-    daftar_p_kecil = [11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61]
-    col_p, col_q = st.columns(2)
-    p = col_p.selectbox("Pilih Bilangan Prima Pertama (p):", daftar_p_kecil, index=2)
-    q = col_q.selectbox("Pilih Bilangan Prima Kedua (q):", daftar_p_kecil, index=4)
-    
-    kunci_publik = p * q
-    phi_n = (p - 1) * (q - 1)
-    
-    st.info(f"🔑 **Kunci Publik ($N = p \\times q$):** `{p} × {q} = {kunci_publik}`")
-    st.write(f"🧮 **Fungsi Totient Euler $\\phi(N) = (p-1)(q-1)$:** `{phi_n}`")
-    st.caption("Komputer dengan mudah mengalikan p dan q menjadi N, tetapi memecah N kembali menjadi p dan q untuk angka ratusan digit membutuhkan waktu ribuan tahun!")
     st.markdown('</div>', unsafe_allow_html=True)
