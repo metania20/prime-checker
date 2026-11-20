@@ -132,100 +132,73 @@ st.markdown("""
 st.markdown('<div class="lab-title">🧬 Prime Lab: Interactive Studio</div>', unsafe_allow_html=True)
 st.markdown('<div class="lab-sub">Laboratorium Eksplorasi Teori Bilangan, Saringan Visual, Kriptografi RSA, & Arena Game</div>', unsafe_allow_html=True)
 
-import streamlit.components.v1 as components
+# 4b. Musik Latar Ceria Otomatis (Auto-Start Arcade / Upbeat Melody)
+components.html(
+    """
+    <script>
+        let audioCtx = null;
+        let isStarted = false;
+        let step = 0;
 
-# 4b. Musik Latar Interaktif (Web Audio API - Synth Ambient)
-with st.expander("🎵 Musik Latar Lab (Klik untuk Putar / Jeda)", expanded=False):
-    components.html(
-        """
-        <div style="display:flex; align-items:center; gap:12px; font-family:sans-serif; color:#0f172a;">
-            <button id="btnAudio" onclick="toggleMusic()" style="
-                padding:8px 16px; border:none; border-radius:8px;
-                background:#4f46e5; color:#ffffff; font-weight:600; cursor:pointer;">
-                ▶️ Putar Musik
-            </button>
-            <label style="font-size:13px;">Volume:
-                <input id="volSlider" type="range" min="0" max="100" value="25" oninput="setVolume(this.value)">
-            </label>
-            <span id="statusAudio" style="font-size:12px; color:#475569;">Siap diputar</span>
-        </div>
+        // Melodi ceria & upbeat (Hz) - gaya game edukasi yang fun
+        const melody = [
+            523.25, 659.25, 783.99, 1046.50,
+            783.99, 659.25, 587.33, 698.46,
+            880.00, 783.99, 659.25, 523.25,
+            587.33, 659.25, 523.25, 0
+        ];
 
-        <script>
-            let audioCtx = null;
-            let isPlaying = false;
-            let masterGain = null;
-            let timerId = null;
-            let step = 0;
+        function playFunNote(freq) {
+            if (!audioCtx || freq === 0) return;
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
 
-            // Tangga nada pentatonik lembut (Hz)
-            const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+            osc.type = "triangle"; // Suara cerah dan ceria seperti game
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
-            function initAudio() {
-                if (!audioCtx) {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    audioCtx = new AudioContext();
-                    masterGain = audioCtx.createGain();
-                    masterGain.gain.value = (document.getElementById("volSlider").value / 100) * 0.25;
-                    masterGain.connect(audioCtx.destination);
-                }
-                if (audioCtx.state === "suspended") {
-                    audioCtx.resume();
-                }
+            const now = audioCtx.currentTime;
+            gainNode.gain.setValueAtTime(0.001, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.08, now + 0.03);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.26);
+        }
+
+        function startFunMusic() {
+            if (isStarted) return;
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
             }
-
-            function playSoftNote(freq) {
-                if (!audioCtx || !isPlaying) return;
-                const osc = audioCtx.createOscillator();
-                const noteGain = audioCtx.createGain();
-                osc.type = "sine";
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-                const now = audioCtx.currentTime;
-                noteGain.gain.setValueAtTime(0.0001, now);
-                noteGain.gain.exponentialRampToValueAtTime(0.4, now + 0.08);
-                noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.4);
-
-                osc.connect(noteGain);
-                noteGain.connect(masterGain);
-                osc.start(now);
-                osc.stop(now + 1.45);
+            if (audioCtx.state === "suspended") {
+                audioCtx.resume();
             }
-
-            function toggleMusic() {
-                initAudio();
-                const btn = document.getElementById("btnAudio");
-                const status = document.getElementById("statusAudio");
-
-                if (!isPlaying) {
-                    isPlaying = true;
-                    btn.innerHTML = "⏸️ Jeda Musik";
-                    btn.style.background = "#dc2626";
-                    status.innerText = "Sedang memutar melodi ambient...";
-                    playSoftNote(notes[step % notes.length]);
+            if (audioCtx.state === "running") {
+                isStarted = true;
+                setInterval(() => {
+                    playFunNote(melody[step % melody.length]);
                     step++;
-                    timerId = setInterval(() => {
-                        playSoftNote(notes[step % notes.length]);
-                        step++;
-                    }, 900);
-                } else {
-                    isPlaying = false;
-                    btn.innerHTML = "▶️ Putar Musik";
-                    btn.style.background = "#4f46e5";
-                    status.innerText = "Dijeda";
-                    clearInterval(timerId);
-                }
+                }, 260); // Tempo cepat & ceria
             }
+        }
 
-            function setVolume(val) {
-                if (masterGain && audioCtx) {
-                    masterGain.gain.setValueAtTime((val / 100) * 0.25, audioCtx.currentTime);
-                }
-            }
-        </script>
-        """,
-        height=65,
-    )
+        // Coba jalankan langsung saat halaman dibuka
+        window.addEventListener("load", startFunMusic);
+        startFunMusic();
 
+        // Fallback otomatis jika browser menahan autoplay: langsung bunyi saat klik/sentuh pertama di mana saja
+        ["click", "touchstart", "keydown"].forEach(evt => {
+            window.parent.document.addEventListener(evt, startFunMusic, { once: true });
+            document.addEventListener(evt, startFunMusic, { once: true });
+        });
+    </script>
+    """,
+    height=0,
+)
 # 4 Tab Super Interaktif
 t_cek, t_grid, t_game, t_rsa = st.tabs([
     "🔬 Lab Deteksi & Pola",
