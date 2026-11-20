@@ -139,7 +139,7 @@ st.markdown('<div class="lab-sub">Laboratorium Eksplorasi Teori Bilangan, Saring
 import streamlit.components.v1 as components
 
 # 4 Tab Super Interaktif
-t_cek, t_grid, t_game, t_rsa = st.tabs([
+t_cek, t_grid, t_game = st.tabs([
     "🔬 Lab Deteksi & Pola",
     "🟩 Papan Saringan Visual",
     "⏱️ Time-Attack & Leaderboard",
