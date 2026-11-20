@@ -134,7 +134,7 @@ st.markdown('<div class="lab-sub">Laboratorium Eksplorasi Teori Bilangan, Saring
 
 import streamlit.components.v1 as components
 
-# 4b. Musik Latar Ceria Otomatis (Auto-Start Arcade / Upbeat Melody)
+# 4b. Musik Latar Fun & Bouncy (Arpeggio + Bass Ringan)
 components.html(
     """
     <script>
@@ -142,32 +142,47 @@ components.html(
         let isStarted = false;
         let step = 0;
 
-        // Melodi ceria & upbeat (Hz) - gaya game edukasi yang fun
-        const melody = [
-            523.25, 659.25, 783.99, 1046.50,
-            783.99, 659.25, 587.33, 698.46,
-            880.00, 783.99, 659.25, 523.25,
-            587.33, 659.25, 523.25, 0
+        // Pola melodi ceria naik-turun (C major / G major / A minor / F major)
+        const leadNotes = [
+            523.25, 659.25, 783.99, 659.25,
+            880.00, 783.99, 659.25, 587.33,
+            587.33, 783.99, 987.77, 783.99,
+            880.00, 783.99, 659.25, 523.25
         ];
 
-        function playFunNote(freq) {
+        // Bass ringan pengiring agar lebih "fun"
+        const bassNotes = [
+            130.81, 0, 196.00, 0,
+            220.00, 0, 164.81, 0,
+            196.00, 0, 246.94, 0,
+            174.61, 0, 196.00, 0
+        ];
+
+        function playTone(freq, duration, type, peakGain) {
             if (!audioCtx || freq === 0) return;
             const osc = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
 
-            osc.type = "triangle"; // Suara cerah dan ceria seperti game
+            osc.type = type;
             osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
             const now = audioCtx.currentTime;
-            gainNode.gain.setValueAtTime(0.001, now);
-            gainNode.gain.exponentialRampToValueAtTime(0.08, now + 0.03);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+            gainNode.gain.setValueAtTime(0.0008, now);
+            gainNode.gain.exponentialRampToValueAtTime(peakGain, now + 0.02);
+            gainNode.gain.exponentialRampToValueAtTime(0.0008, now + duration);
 
             osc.connect(gainNode);
             gainNode.connect(audioCtx.destination);
 
             osc.start(now);
-            osc.stop(now + 0.26);
+            osc.stop(now + duration + 0.02);
+        }
+
+        function playBeat() {
+            const idx = step % leadNotes.length;
+            playTone(leadNotes[idx], 0.18, "triangle", 0.085);
+            playTone(bassNotes[idx], 0.22, "sine", 0.07);
+            step++;
         }
 
         function startFunMusic() {
@@ -181,18 +196,14 @@ components.html(
             }
             if (audioCtx.state === "running") {
                 isStarted = true;
-                setInterval(() => {
-                    playFunNote(melody[step % melody.length]);
-                    step++;
-                }, 260); // Tempo cepat & ceria
+                playBeat();
+                setInterval(playBeat, 210); // Tempo upbeat & fun
             }
         }
 
-        // Coba jalankan langsung saat halaman dibuka
         window.addEventListener("load", startFunMusic);
         startFunMusic();
 
-        // Fallback otomatis jika browser menahan autoplay: langsung bunyi saat klik/sentuh pertama di mana saja
         ["click", "touchstart", "keydown"].forEach(evt => {
             window.parent.document.addEventListener(evt, startFunMusic, { once: true });
             document.addEventListener(evt, startFunMusic, { once: true });
