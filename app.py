@@ -300,4 +300,4 @@ with t_rsa:
     st.info(f"🔑 **Kunci Publik ($N = p \\times q$):** `{p} × {q} = {kunci_publik}`")
     st.write(f"🧮 **Fungsi Totient Euler $\\phi(N) = (p-1)(q-1)$:** `{phi_n}`")
     st.caption("Komputer dengan mudah mengalikan p dan q menjadi N, tetapi memecah N kembali menjadi p dan q untuk angka ratusan digit membutuhkan waktu ribuan tahun!")
-    st.markdown('</div>', unsafe_allow_html=True)or}")
+    st.markdown('</div>', unsafe_allow_html=True)
